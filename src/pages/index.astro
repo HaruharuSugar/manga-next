@@ -1,0 +1,52 @@
+---
+// File: src/pages/index.astro
+import Layout from "../layouts/Layout.astro";
+import { getWorks } from "../lib/works.js";
+
+const works = await getWorks();
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+---
+<Layout title="アニメの続きは漫画何巻から？｜原作の続き早見表">
+  <h1>アニメの続きは漫画何巻から？</h1>
+  <input type="search" id="search" placeholder="作品名で検索" />
+  <table>
+    <thead>
+      <tr>
+        <th>作品名</th>
+        <th>アニメ</th>
+        <th>続きの原作</th>
+        <th>備考</th>
+        <th>購入</th>
+      </tr>
+    </thead>
+    <tbody id="list">
+      {works.map((w) => (
+        <tr data-title={w.title}>
+          <td>
+            {w.slug ? <a href={`${base}/works/${w.slug}/`}>{w.title}</a> : w.title}
+          </td>
+          <td>{w.anime}</td>
+          <td>{w.next}</td>
+          <td>{w.note}</td>
+          <td>
+            {w.amazon && w.amazon.startsWith("http") && (
+              <a class="buy" href={w.amazon} target="_blank" rel="sponsored noopener">Amazonで見る</a>
+            )}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  <script>
+    const search = document.getElementById("search");
+    const rows = document.querySelectorAll("#list tr");
+    search.addEventListener("input", () => {
+      const keyword = search.value.trim();
+      rows.forEach((tr) => {
+        const title = tr.getAttribute("data-title") || "";
+        tr.style.display = title.includes(keyword) ? "" : "none";
+      });
+    });
+  </script>
+</Layout>

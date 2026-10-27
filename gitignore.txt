@@ -1,0 +1,5 @@
+# File: .gitignore
+node_modules
+dist
+.astro
+.env

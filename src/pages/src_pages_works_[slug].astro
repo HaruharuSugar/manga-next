@@ -1,0 +1,45 @@
+---
+// File: src/pages/works/[slug].astro
+import Layout from "../../layouts/Layout.astro";
+import { getWorks } from "../../lib/works.js";
+
+export async function getStaticPaths() {
+  const works = await getWorks();
+  return works
+    .filter((w) => w.slug)
+    .map((w) => ({
+      params: { slug: w.slug },
+      props: { work: w }
+    }));
+}
+
+const { work } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const pageTitle = `${work.title}のアニメの続きは漫画何巻から？`;
+const pageDesc = work.description || `${work.title}のアニメの続きは、原作漫画の${work.next}です。`;
+---
+<Layout title={pageTitle} description={pageDesc}>
+  <h1>{pageTitle}</h1>
+  <p>{pageDesc}</p>
+
+  <dl class="detail">
+    <dt>アニメの放送範囲</dt>
+    <dd>{work.anime}</dd>
+    <dt>続きの原作</dt>
+    <dd>{work.next}</dd>
+    {work.note && (
+      <>
+        <dt>備考</dt>
+        <dd>{work.note}</dd>
+      </>
+    )}
+  </dl>
+
+  {work.amazon && work.amazon.startsWith("http") && (
+    <p>
+      <a class="buy" href={work.amazon} target="_blank" rel="sponsored noopener">Amazonで続きの巻を見る</a>
+    </p>
+  )}
+
+  <p><a href={`${base}/`}>← 作品一覧に戻る</a></p>
+</Layout>
