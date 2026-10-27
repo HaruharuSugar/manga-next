@@ -5,30 +5,56 @@ import { getWorks } from "../lib/works.js";
 
 const works = await getWorks();
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+// 「8巻 第50話から」から巻数の数字を取り出す(取れなければ null)
+const volume = (text) => {
+  const m = (text || "").match(/(\d+)\s*巻/);
+  return m ? m[1] : null;
+};
 ---
 <Layout title="アニメの続きは漫画何巻から？｜原作の続き早見表">
   <section class="hero">
-    <h1>アニメの続きは、漫画の何巻から？</h1>
-    <p>アニメを見終わったあと、原作のどこから読めばいいかを作品ごとにまとめています。</p>
-    <input type="search" id="search" placeholder="作品名で検索" />
-    <p class="count"><span id="count">{works.length}</span>作品を掲載中</p>
+    <h1>アニメの<span class="marker">続き</span>は、<br />漫画の何巻から？</h1>
+    <p class="hero-lead">アニメを見終わったあと、原作のどこから読めばいいかを作品ごとにまとめています。</p>
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="M20 20l-3.5-3.5"></path>
+      </svg>
+      <input type="search" id="search" placeholder="作品名で検索" aria-label="作品名で検索" />
+    </div>
+    <p class="count"><span id="count">{works.length}</span> 作品を掲載中</p>
   </section>
 
   <div class="grid" id="list">
-    {works.map((w) => (
-      <article class="card" data-title={w.title}>
-        <h2><a href={`${base}/works/${w.slug}/`}>{w.title}</a></h2>
-        <p class="season">{w.latest.season} {w.latest.anime}</p>
-        <p class="next"><span>続きは</span>{w.latest.next}</p>
-        {w.latest.note && <p class="note">{w.latest.note}</p>}
-        <div class="actions">
-          <a class="detail-link" href={`${base}/works/${w.slug}/`}>詳細を見る</a>
-          {w.latest.amazon && w.latest.amazon.startsWith("http") && (
-            <a class="buy" href={w.latest.amazon} target="_blank" rel="sponsored noopener">Amazonで見る</a>
-          )}
-        </div>
-      </article>
-    ))}
+    {works.map((w, i) => {
+      const vol = volume(w.latest.next);
+      return (
+        <article class="card" data-title={w.title} style={`animation-delay: ${Math.min(i, 12) * 40}ms`}>
+          <h2><a href={`${base}/works/${w.slug}/`}>{w.title}</a></h2>
+          <p class="season">{[w.latest.season, w.latest.anime].filter(Boolean).join(" ")}</p>
+          <div class="next-box">
+            {vol && (
+              <div class="vol" aria-hidden="true">
+                <b>{vol}</b>
+                <small>巻</small>
+              </div>
+            )}
+            <p class="next-text">
+              <span>続きはここから</span>
+              <strong>{w.latest.next}</strong>
+            </p>
+          </div>
+          {w.latest.note && <p class="note">{w.latest.note}</p>}
+          <div class="actions">
+            {w.latest.amazon && w.latest.amazon.startsWith("http") && (
+              <a class="buy" href={w.latest.amazon} target="_blank" rel="sponsored noopener">Amazonで見る</a>
+            )}
+            <a class="detail-link" href={`${base}/works/${w.slug}/`}>詳細を見る →</a>
+          </div>
+        </article>
+      );
+    })}
   </div>
   <p id="empty" class="empty" hidden>該当する作品が見つかりませんでした。</p>
 
