@@ -7,46 +7,48 @@ const works = await getWorks();
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
 <Layout title="アニメの続きは漫画何巻から？｜原作の続き早見表">
-  <h1>アニメの続きは漫画何巻から？</h1>
-  <input type="search" id="search" placeholder="作品名で検索" />
-  <table>
-    <thead>
-      <tr>
-        <th>作品名</th>
-        <th>アニメ</th>
-        <th>続きの原作</th>
-        <th>備考</th>
-        <th>購入</th>
-      </tr>
-    </thead>
-    <tbody id="list">
-      {works.map((w) => (
-        <tr data-title={w.title}>
-          <td>
-            {w.slug ? <a href={`${base}/works/${w.slug}/`}>{w.title}</a> : w.title}
-          </td>
-          <td>{w.anime}</td>
-          <td>{w.next}</td>
-          <td>{w.note}</td>
-          <td>
-            {w.amazon && w.amazon.startsWith("http") && (
-              <a class="buy" href={w.amazon} target="_blank" rel="sponsored noopener">Amazonで見る</a>
-            )}
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
+  <section class="hero">
+    <h1>アニメの続きは、漫画の何巻から？</h1>
+    <p>アニメを見終わったあと、原作のどこから読めばいいかを作品ごとにまとめています。</p>
+    <input type="search" id="search" placeholder="作品名で検索" />
+    <p class="count"><span id="count">{works.length}</span>作品を掲載中</p>
+  </section>
+
+  <div class="grid" id="list">
+    {works.map((w) => (
+      <article class="card" data-title={w.title}>
+        <h2><a href={`${base}/works/${w.slug}/`}>{w.title}</a></h2>
+        <p class="season">{w.latest.season} {w.latest.anime}</p>
+        <p class="next"><span>続きは</span>{w.latest.next}</p>
+        {w.latest.note && <p class="note">{w.latest.note}</p>}
+        <div class="actions">
+          <a class="detail-link" href={`${base}/works/${w.slug}/`}>詳細を見る</a>
+          {w.latest.amazon && w.latest.amazon.startsWith("http") && (
+            <a class="buy" href={w.latest.amazon} target="_blank" rel="sponsored noopener">Amazonで見る</a>
+          )}
+        </div>
+      </article>
+    ))}
+  </div>
+  <p id="empty" class="empty" hidden>該当する作品が見つかりませんでした。</p>
 
   <script>
     const search = document.getElementById("search");
-    const rows = document.querySelectorAll("#list tr");
+    const cards = document.querySelectorAll("#list .card");
+    const count = document.getElementById("count");
+    const empty = document.getElementById("empty");
+
     search.addEventListener("input", () => {
       const keyword = search.value.trim();
-      rows.forEach((tr) => {
-        const title = tr.getAttribute("data-title") || "";
-        tr.style.display = title.includes(keyword) ? "" : "none";
+      let visible = 0;
+      cards.forEach((card) => {
+        const title = card.getAttribute("data-title") || "";
+        const show = title.includes(keyword);
+        card.style.display = show ? "" : "none";
+        if (show) visible++;
       });
+      count.textContent = visible;
+      empty.hidden = visible !== 0;
     });
   </script>
 </Layout>
