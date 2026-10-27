@@ -1,0 +1,243 @@
+/* File: src/styles/global.css */
+:root {
+  --main: #2b4c7e;
+  --accent: #ff9900;
+  --bg: #f4f6fa;
+  --text: #222;
+  --sub: #667;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.7;
+}
+
+a {
+  color: var(--main);
+}
+
+header {
+  padding: 16px;
+  background: var(--main);
+}
+
+.site-title {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  line-height: 1.4;
+}
+
+h2 {
+  font-size: 1.2rem;
+}
+
+/* トップのヒーロー部分 */
+.hero {
+  padding: 32px 0 16px;
+  text-align: center;
+}
+
+.hero h1 {
+  margin: 0 0 8px;
+  font-size: 1.8rem;
+}
+
+.hero p {
+  margin: 0 0 16px;
+  color: var(--sub);
+}
+
+#search {
+  width: 100%;
+  max-width: 440px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  border: 1px solid #ccd;
+  border-radius: 999px;
+}
+
+.count {
+  margin-top: 12px;
+  font-size: 0.9rem;
+}
+
+/* 作品カード */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.card {
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+.card h2 {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+}
+
+.card h2 a {
+  text-decoration: none;
+}
+
+.season {
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  color: var(--sub);
+}
+
+.next {
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  background: #eef3fb;
+  border-left: 4px solid var(--main);
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.next span {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: normal;
+  color: var(--sub);
+}
+
+.note {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  color: var(--sub);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.detail-link {
+  font-size: 0.9rem;
+}
+
+.empty {
+  text-align: center;
+  color: var(--sub);
+}
+
+/* ボタン */
+.buy {
+  display: inline-block;
+  padding: 8px 14px;
+  background: var(--accent);
+  color: #111;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* 作品ページ */
+.crumb {
+  font-size: 0.9rem;
+}
+
+.callout {
+  margin: 16px 0;
+  padding: 20px;
+  background: #fff;
+  border-left: 6px solid var(--main);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+.callout-label {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--sub);
+}
+
+.callout-main {
+  margin: 4px 0 12px;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--main);
+}
+
+.lead {
+  color: var(--sub);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #e3e6ee;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #eef1f6;
+  font-size: 0.9rem;
+}
+
+.detail dt {
+  margin-top: 16px;
+  font-weight: bold;
+  color: var(--main);
+}
+
+.detail dd {
+  margin: 4px 0 0;
+}
+
+footer {
+  padding: 24px 16px;
+  font-size: 0.8rem;
+  color: var(--sub);
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .hero h1 {
+    font-size: 1.4rem;
+  }
+  .callout-main {
+    font-size: 1.5rem;
+  }
+  th, td {
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+}
