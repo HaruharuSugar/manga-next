@@ -5,41 +5,59 @@ import { getWorks } from "../../lib/works.js";
 
 export async function getStaticPaths() {
   const works = await getWorks();
-  return works
-    .filter((w) => w.slug)
-    .map((w) => ({
-      params: { slug: w.slug },
-      props: { work: w }
-    }));
+  return works.map((w) => ({
+    params: { slug: w.slug },
+    props: { work: w }
+  }));
 }
 
 const { work } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const latest = work.latest;
 const pageTitle = `${work.title}のアニメの続きは漫画何巻から？`;
-const pageDesc = work.description || `${work.title}のアニメの続きは、原作漫画の${work.next}です。`;
+const pageDesc =
+  work.description ||
+  `${work.title}のアニメ${latest.season}の続きは、原作漫画の${latest.next}です。`;
 ---
 <Layout title={pageTitle} description={pageDesc}>
-  <h1>{pageTitle}</h1>
-  <p>{pageDesc}</p>
+  <p class="crumb"><a href={`${base}/`}>← 作品一覧に戻る</a></p>
+  <h1>{work.title}</h1>
 
-  <dl class="detail">
-    <dt>アニメの放送範囲</dt>
-    <dd>{work.anime}</dd>
-    <dt>続きの原作</dt>
-    <dd>{work.next}</dd>
-    {work.note && (
-      <>
-        <dt>備考</dt>
-        <dd>{work.note}</dd>
-      </>
+  <div class="callout">
+    <p class="callout-label">{latest.season}の続きは</p>
+    <p class="callout-main">{latest.next}</p>
+    {latest.amazon && latest.amazon.startsWith("http") && (
+      <a class="buy" href={latest.amazon} target="_blank" rel="sponsored noopener">Amazonで続きの巻を見る</a>
     )}
-  </dl>
+  </div>
 
-  {work.amazon && work.amazon.startsWith("http") && (
-    <p>
-      <a class="buy" href={work.amazon} target="_blank" rel="sponsored noopener">Amazonで続きの巻を見る</a>
-    </p>
-  )}
+  <p class="lead">{pageDesc}</p>
 
-  <p><a href={`${base}/`}>← 作品一覧に戻る</a></p>
+  <h2>期ごとの対応表</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>期</th>
+        <th>アニメ</th>
+        <th>続きの原作</th>
+        <th>備考</th>
+        <th>購入</th>
+      </tr>
+    </thead>
+    <tbody>
+      {work.seasons.map((s) => (
+        <tr>
+          <td>{s.season}</td>
+          <td>{s.anime}</td>
+          <td>{s.next}</td>
+          <td>{s.note}</td>
+          <td>
+            {s.amazon && s.amazon.startsWith("http") && (
+              <a class="buy" href={s.amazon} target="_blank" rel="sponsored noopener">Amazonで見る</a>
+            )}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
 </Layout>
