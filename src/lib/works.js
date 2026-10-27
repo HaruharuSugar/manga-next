@@ -46,14 +46,13 @@ export async function getWorks() {
 
   const res = await fetch(url);
   if (!res.ok) {
-    // 失敗したまま空のサイトを公開しないよう、ビルドを止める
     throw new Error(`シートの取得に失敗しました: ${res.status}`);
   }
 
   const rows = parseCSV(await res.text());
   const headers = rows[0].map((h) => h.trim());
 
-  return rows
+  const records = rows
     .slice(1)
     .filter((r) => r.some((v) => v.trim() !== ""))
     .map((r) => {
@@ -63,4 +62,32 @@ export async function getWorks() {
       });
       return obj;
     });
+
+  // 同じ slug の行を、1作品にまとめる
+  const map = new Map();
+  for (const r of records) {
+    if (!r.slug) {
+      console.warn(`slug が空の行をスキップしました: ${r.title}`);
+      continue;
+    }
+    if (!map.has(r.slug)) {
+      map.set(r.slug, { slug: r.slug, title: r.title, description: "", seasons: [] });
+    }
+    const w = map.get(r.slug);
+    if (!w.title && r.title) w.title = r.title;
+    if (!w.description && r.description) w.description = r.description;
+    w.seasons.push({
+      season: r.season,
+      anime: r.anime,
+      next: r.next,
+      note: r.note,
+      amazon: r.amazon
+    });
+  }
+
+  // 最後の行を、最新期として扱う
+  return [...map.values()].map((w) => ({
+    ...w,
+    latest: w.seasons[w.seasons.length - 1]
+  }));
 }
