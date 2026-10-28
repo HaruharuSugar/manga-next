@@ -30,26 +30,37 @@ const volume = (text) => {
     {works.map((w, i) => {
       const vol = volume(w.latest.next);
       return (
-        <article class="card" data-title={w.title} style={`animation-delay: ${Math.min(i, 12) * 40}ms`}>
+                <article class="card" data-title={w.title} style={`animation-delay: ${Math.min(i, 12) * 40}ms`}>
           <h2><a href={`${base}/works/${w.slug}/`}>{w.title}</a></h2>
           <p class="season">{[w.latest.season, w.latest.anime].filter(Boolean).join(" ")}</p>
-          <div class="next-box">
-            {vol && (
-              <div class="vol" aria-hidden="true">
-                <b>{vol}</b>
-                <small>巻</small>
+          {w.latests.map((s) => {
+            const vol = volume(s.next);
+            return (
+              <div class="next-box">
+                {vol && (
+                  <div class="vol" aria-hidden="true">
+                    <b>{vol}</b>
+                    <small>巻</small>
+                  </div>
+                )}
+                <p class="next-text">
+                  <span>続きはここから{s.media ? `(${s.media})` : ""}</span>
+                  <strong>{s.next}</strong>
+                </p>
               </div>
-            )}
-            <p class="next-text">
-              <span>続きはここから</span>
-              <strong>{w.latest.next}</strong>
-            </p>
-          </div>
-          {w.latest.note && <p class="note">{w.latest.note}</p>}
+            );
+          })}
+          {w.latests.filter((s) => s.note).map((s) => (
+            <p class="note">{s.note}</p>
+          ))}
           <div class="actions">
-            {w.latest.amazon && w.latest.amazon.startsWith("http") && (
-              <a class="buy" href={w.latest.amazon} target="_blank" rel="sponsored noopener">Amazonで見る</a>
-            )}
+            {w.latests
+              .filter((s) => s.amazon && s.amazon.startsWith("http"))
+              .map((s) => (
+                <a class="buy" href={s.amazon} target="_blank" rel="sponsored noopener">
+                  Amazonで見る{s.media ? `(${s.media})` : ""}
+                </a>
+              ))}
             <a class="detail-link" href={`${base}/works/${w.slug}/`}>詳細を見る →</a>
           </div>
         </article>
