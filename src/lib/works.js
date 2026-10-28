@@ -78,6 +78,7 @@ export async function getWorks() {
     if (!w.description && r.description) w.description = r.description;
     w.seasons.push({
       season: r.season,
+      media: r.media,
       anime: r.anime,
       next: r.next,
       note: r.note,
@@ -85,9 +86,11 @@ export async function getWorks() {
     });
   }
 
-  // 最後の行を、最新期として扱う
-  return [...map.values()].map((w) => ({
-    ...w,
-    latest: w.seasons[w.seasons.length - 1]
-  }));
+    // 最後の行の期を最新期とし、その期の全媒体の行を latests にまとめる
+  return [...map.values()].map((w) => {
+    const latest = w.seasons[w.seasons.length - 1];
+    const latests = w.seasons.filter((s) => s.season === latest.season);
+    return { ...w, latest, latests };
+  });
+}
 }
