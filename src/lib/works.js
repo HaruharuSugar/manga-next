@@ -86,11 +86,10 @@ export async function getWorks() {
     });
   }
 
-    // 最後の行の期を最新期とし、その期の全媒体の行を latests にまとめる
+  // 最後の行の期を最新期とし、その期の全媒体の行を latests にまとめる
   return [...map.values()].map((w) => {
     const latest = w.seasons[w.seasons.length - 1];
     const latests = w.seasons.filter((s) => s.season === latest.season);
     return { ...w, latest, latests };
   });
-}
 }
