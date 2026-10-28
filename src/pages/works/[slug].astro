@@ -17,30 +17,37 @@ const latest = work.latest;
 const pageTitle = `${work.title}のアニメの続きは漫画何巻から？`;
 const pageDesc =
   work.description ||
-  `${work.title}のアニメ${latest.season}の続きは、原作漫画の${latest.next}です。`;
+  `${work.title}のアニメ${latest.season}の続きは、原作の${work.latests.map((s) => s.next).join("、")}です。`;
 
-const m = (latest.next || "").match(/(\d+)\s*巻/);
-const vol = m ? m[1] : null;
+const volume = (text) => {
+  const m = (text || "").match(/(\d+)\s*巻/);
+  return m ? m[1] : null;
+};
 ---
 <Layout title={pageTitle} description={pageDesc}>
   <p class="crumb"><a href={`${base}/`}>← 作品一覧に戻る</a></p>
   <h1 class="work-title">{work.title}</h1>
 
-  <div class="callout">
-    {vol && (
-      <div class="vol" aria-hidden="true">
-        <b>{vol}</b>
-        <small>巻</small>
+  {work.latests.map((s) => {
+    const vol = volume(s.next);
+    return (
+      <div class="callout">
+        {vol && (
+          <div class="vol" aria-hidden="true">
+            <b>{vol}</b>
+            <small>巻</small>
+          </div>
+        )}
+        <div class="callout-body">
+          <p class="callout-label">{s.season}の続きはここから{s.media ? `(${s.media})` : ""}</p>
+          <p class="callout-main">{s.next}</p>
+          {s.amazon && s.amazon.startsWith("http") && (
+            <a class="buy" href={s.amazon} target="_blank" rel="sponsored noopener">Amazonで続きの巻を見る</a>
+          )}
+        </div>
       </div>
-    )}
-    <div class="callout-body">
-      <p class="callout-label">{latest.season}の続きはここから</p>
-      <p class="callout-main">{latest.next}</p>
-      {latest.amazon && latest.amazon.startsWith("http") && (
-        <a class="buy" href={latest.amazon} target="_blank" rel="sponsored noopener">Amazonで続きの巻を見る</a>
-      )}
-    </div>
-  </div>
+    );
+  })}
 
   <p class="lead">{pageDesc}</p>
 
@@ -50,6 +57,7 @@ const vol = m ? m[1] : null;
       <thead>
         <tr>
           <th>期</th>
+          <th>媒体</th>
           <th>アニメ</th>
           <th>続きの原作</th>
           <th>備考</th>
@@ -60,6 +68,7 @@ const vol = m ? m[1] : null;
         {work.seasons.map((s) => (
           <tr>
             <td>{s.season}</td>
+            <td>{s.media}</td>
             <td>{s.anime}</td>
             <td>{s.next}</td>
             <td>{s.note}</td>
